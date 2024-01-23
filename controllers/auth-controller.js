@@ -39,10 +39,10 @@ const signup = async (req, res) => {
   const verifyEmail = {
     to: email,
     subject: "verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationCode}">Click to verify</a>`,
+    html: `<a target="_blank" href="${BASE_URL}/users/verify/${verificationCode}">Click to verify</a>`,
   };
   await SendEmail(verifyEmail);
-  console.log(newUser);
+  // console.log(newUser);
 
   res.status(201).json({
     email: newUser.email,
@@ -60,6 +60,9 @@ const signin = async (req, res) => {
     throw HttpError(401, "Email or password is wrong(mail)");
   }
 
+  if (!user.verify) {
+    throw HttpError(404, "User not found");
+  }
   //проверяем пароль, есть ли в базе
   const passwordCompare = await bcrypt.compare(password, user.password);
   if (!passwordCompare) {
@@ -128,7 +131,23 @@ const ChangeAvatar = async (req, res) => {
   res.status(200).json(result.avatarURL);
 };
 
+const verify = async (req, res) => {
+  const { verificationCode } = req.params;
+  const user = await User.findOne({ verificationCode });
+  if (!user) {
+    throw HttpError(400, "Verification has already been passed");
+  }
+  await User.findByIdAndUpdate(user._id, {
+    verify: true,
+    verificationCode: "",
+  });
+  res.json({
+    message: "Verification successful",
+  });
+};
+
 export default {
+  verify: ctrlWrapper(verify),
   signup: ctrlWrapper(signup),
   signin: ctrlWrapper(signin),
   GetCurrent: ctrlWrapper(GetCurrent),

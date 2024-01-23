@@ -36,6 +36,9 @@ authRouter.post(
 //получение токена по запросу
 authRouter.get("/current", authenticate, authController.GetCurrent);
 
+//верификация
+authRouter.get("/verify/:verificationCode", authController.verify);
+
 //логаут
 authRouter.post("/signout", authenticate, authController.signout);
 export default authRouter;
