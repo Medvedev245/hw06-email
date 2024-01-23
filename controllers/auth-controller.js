@@ -6,14 +6,17 @@ import User from "../models/User.js";
 import Jimp from "jimp";
 
 import path from "path";
+import { nanoid } from "nanoid";
 
 import fs from "fs/promises";
 
-import { HttpError } from "../Helpers/index.js";
+import { HttpError, SendEmail } from "../Helpers/index.js";
+
+// import { sendEmail } from "../Helpers/sendEmail.js";
 
 import { ctrlWrapper } from "../decorators/index.js";
 
-import { JWT_SECRET } from "../config.js";
+import { JWT_SECRET, BASE_URL } from "../config.js";
 
 const avatarPath = path.resolve("public", "avatars");
 
@@ -26,8 +29,19 @@ const signup = async (req, res) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
+  const verificationCode = nanoid();
 
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    verificationCode,
+  });
+  const verifyEmail = {
+    to: email,
+    subject: "verify email",
+    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationCode}">Click to verify</a>`,
+  };
+  await SendEmail(verifyEmail);
   console.log(newUser);
 
   res.status(201).json({

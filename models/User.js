@@ -38,6 +38,13 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: String,
+    },
   },
   { versionKey: false, timestamps: true }
 );
