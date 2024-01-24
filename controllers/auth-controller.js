@@ -61,7 +61,7 @@ const signin = async (req, res) => {
   }
 
   if (!user.verify) {
-    throw HttpError(404, "User not found");
+    throw HttpError(404, "User not verify");
   }
   //проверяем пароль, есть ли в базе
   const passwordCompare = await bcrypt.compare(password, user.password);
@@ -146,7 +146,28 @@ const verify = async (req, res) => {
   });
 };
 
+const resendVerifyEmail = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(404, "Email not found");
+  }
+  if (user.verify) {
+    throw HttpError(404, "Email verify");
+  }
+  const verifyEmail = {
+    to: email,
+    subject: "verify email",
+    html: `<a target="_blank" href="${BASE_URL}/users/verify/${user.verificationCode}">Click to verify</a>`,
+  };
+  await sendEmail(verifyEmail);
+  res.json({
+    message: "Verification sended again",
+  });
+};
+
 export default {
+  resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
   verify: ctrlWrapper(verify),
   signup: ctrlWrapper(signup),
   signin: ctrlWrapper(signin),

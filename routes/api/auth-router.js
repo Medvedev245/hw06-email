@@ -13,7 +13,11 @@ import { authenticate } from "../../middlewares/authenticate.js";
 
 import { validateBody } from "../../decorators/index.js";
 
-import { userSigninShema, userSignupShema } from "../../models/User.js";
+import {
+  userSigninShema,
+  userSignupShema,
+  userEmailShema,
+} from "../../models/User.js";
 
 const authRouter = express.Router();
 
@@ -31,6 +35,14 @@ authRouter.post(
   isEmptyBody,
   validateBody(userSignupShema),
   authController.signin
+);
+
+//еще раз выслать верификацию
+authRouter.post(
+  "/verify",
+  isEmptyBody,
+  validateBody(userEmailShema),
+  authController.resendVerifyEmail
 );
 
 //получение токена по запросу
