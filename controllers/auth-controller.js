@@ -42,7 +42,6 @@ const signup = async (req, res) => {
     html: `<a target="_blank" href="${BASE_URL}/users/verify/${verificationCode}">Click to verify</a>`,
   };
   await SendEmail(verifyEmail);
-  // console.log(newUser);
 
   res.status(201).json({
     email: newUser.email,
