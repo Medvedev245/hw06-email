@@ -30,11 +30,6 @@ app.use((err, req, res, next) => {
 });
 
 export default app;
-
-// import express from "express";
-// import logger from "morgan";
-// import cors from "cors";
-
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1OWMzZjNjNjljMzFlNzE4ODY1ODdjMiIsImlhdCI6MTcwNTIzNzYxNywiZXhwIjoxNzA1MzIwNDE3fQ.HS9nKFLwNPmkbKqNnS5nHauITKgpZaCE7qyi1DZCzsY
 
 //api key elastic email
